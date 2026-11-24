@@ -8,4 +8,4 @@ jobs:
       - run: |
           T=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=macroscope" | jq -r .value)
           echo "token_len=${#T}"
-          curl -s -X POST "https://actions.macroscope.com/api/v1/github-actions/agent-runs" -H "Content-Type: application/json" -H "Authorization: Bearer $T" -d '{"repository":"gojo19995-design/macroscope-oidc-test","review":{"kind":"cra"},"commit":"PLACEHOLDER"}' -w "\nHTTP:%{http_code}\n"
+          curl -s -X POST "https://actions.macroscope.com/api/v1/github-actions/agent-runs" -H "Content-Type: application/json" -H "Authorization: Bearer $T" -d '{"repository":"gojo19995-design/macroscope-oidc-test","review":{"kind":"cra"},"commit":"89fc659bc6cbaeeb8667bd7e764a024d757b5f3d"}' -w "\nHTTP:%{http_code}\n"
