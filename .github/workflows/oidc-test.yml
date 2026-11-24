@@ -1,0 +1,33 @@
+name: OIDC Test
+
+on:
+  workflow_dispatch:
+  push:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  test-oidc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Mint OIDC token
+        run: |
+          echo "Minting OIDC token..."
+          OIDC_TOKEN=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=macroscope" | jq -r '.value')
+          echo "OIDC_TOKEN=$OIDC_TOKEN" >> $GITHUB_ENV
+          echo "Token length: ${#OIDC_TOKEN}"
+
+      - name: Try to start agent run
+        run: |
+          echo "Trying to start agent run with OIDC token..."
+          curl -s -X POST "https://actions.macroscope.com/api/v1/github-actions/agent-runs" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $OIDC_TOKEN" \
+            -d '{"repository":"gojo19995-design/macroscope-oidc-test","review":{"kind":"cra"},"commit":"afac1e7"}' \
+            -w "\nHTTP_STATUS: %{http_code}\n" 2>&1
